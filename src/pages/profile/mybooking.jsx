@@ -12,10 +12,21 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { pink } from "@mui/material/colors";
 import Link from "next/link";
+import { useRouter } from "next/router";
+import { useCookies } from "react-cookie";
 
 const poppins = Poppins({ weight: "400", subsets: ["latin"] });
 
 function MyBooking() {
+  const [cookies, setCookie, removeCookie] = useCookies(["user"]);
+
+  const router = useRouter()
+  
+  const Logout = () => {
+    removeCookie("token", { path: "/" });
+    router.replace("/auth/login");
+  };
+
   return (
     <>
       <div id="__next" className="h-full w-full" style={{ backgroundColor: "#F5F6FA" }}>
@@ -72,7 +83,7 @@ function MyBooking() {
                 </div>
                 <KeyboardArrowUpIcon style={{ rotate: "90deg" }} />
               </div>
-              <div className="flex flex-row justify-between mx-14 mt-8 mb-10">
+              <div onClick={Logout} className="flex flex-row justify-between mx-14 mt-8 mb-10" style={{cursor:'pointer'}}>
                 <div className="flex flex-row gap-8 font-bold">
                   <LogoutIcon sx={{ color: pink[500] }} />
                   <div style={{ color: "#F24545" }}>Logout</div>

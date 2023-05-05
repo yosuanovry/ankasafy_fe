@@ -11,6 +11,8 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { pink } from "@mui/material/colors";
 import { FormControl, TextField, MenuItem, Switch, NativeSelect } from "@mui/material";
+import { useRouter } from "next/router";
+import { useCookies } from "react-cookie";
 
 const poppins = Poppins({ weight: "400", subsets: ["latin"] });
 
@@ -44,6 +46,16 @@ function MyProfile() {
       label: "Australia",
     },
   ];
+  
+  const router = useRouter();
+  const [cookies, setCookie, removeCookie] = useCookies(["user"]);
+  
+  const Logout = () => {
+    removeCookie("token", { path: "/" });
+    router.replace("/auth/login");
+  };
+
+
 
   return (
     <>
@@ -101,7 +113,7 @@ function MyProfile() {
                 </div>
                 <KeyboardArrowUpIcon style={{ rotate: "90deg" }} />
               </div>
-              <div className="flex flex-row justify-between mx-14 mt-8 mb-10">
+              <div onClick={Logout} className="flex flex-row justify-between mx-14 mt-8 mb-10" style={{cursor:'pointer'}}>
                 <div className="flex flex-row gap-8 font-bold">
                   <LogoutIcon sx={{ color: pink[500] }} />
                   <div style={{ color: "#F24545" }}>Logout</div>

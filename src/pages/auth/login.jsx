@@ -15,7 +15,7 @@ function Login() {
   const [password, setPassword] = useState("");
 
   const router = useRouter();
-  const url = `http://localhost:4000/`;
+  const url = `https://drab-gray-bull-ring.cyclic.app`;
 
   let data = {
     email,
@@ -24,10 +24,10 @@ function Login() {
 
   const userLogin = (e) => {
     e.preventDefault();
-    axios.post(url + `auth/login`, data, {
+    axios.post(url + `/auth/login`, data, {
         headers: {
           "Content-Type": "application/json",
-
+          "Accept": "application/json"
         }
       })
       .then((res) => {
