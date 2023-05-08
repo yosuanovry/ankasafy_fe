@@ -2,7 +2,6 @@ import Navbar from "@/component/navbar";
 import Footer from "@/component/footer";
 import Image from "next/image";
 import { Poppins } from "next/font/google";
-import dummy from "../../../public/assets/dummy.png";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import PlaceIcon from "@mui/icons-material/Place";
@@ -10,52 +9,120 @@ import StarIcon from "@mui/icons-material/Star";
 import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { pink } from "@mui/material/colors";
-import { FormControl, TextField, MenuItem, Switch, NativeSelect } from "@mui/material";
+import { FormControl, TextField} from "@mui/material";
 import { useRouter } from "next/router";
 import { useCookies } from "react-cookie";
+import { useState, useEffect } from "react";
+import jwtDecode from "jwt-decode";
+import axios from "axios";
 
 const poppins = Poppins({ weight: "400", subsets: ["latin"] });
 
 function MyProfile() {
-  const numbers = [
-    {
-      value: "ID",
-      label: "+62",
-    },
-    {
-      value: "UK",
-      label: "+44",
-    },
-    {
-      value: "AUS",
-      label: "+61",
-    },
-  ];
-
-  const nationality = [
-    {
-      value: "ID",
-      label: "Indonesia",
-    },
-    {
-      value: "UK",
-      label: "United Kingdom",
-    },
-    {
-      value: "AUS",
-      label: "Australia",
-    },
-  ];
-  
-  const router = useRouter();
   const [cookies, setCookie, removeCookie] = useCookies(["user"]);
-  
+  const [phone, setPhone] = useState("");
+  const [fullname, setFullname] = useState("");
+  const [city, setCity] = useState("");
+  const [address, setAddress] = useState("");
+  const [postcode, setPostcode] = useState("");
+  const [nationality, setNationality] = useState("");
+  const [photo, setPhoto] = useState();
+  const [storage, setStorage] = useState();
+  const [currentPhoto, setCurrentPhoto] = useState(null);
+  const [localStorage, setLocalStorage] = useState({
+    fullname: "Full Name",
+    email: "Email",
+    city: "City",
+    nationality: "Nationality",
+    phone: "Phone",
+    photo: "https://res.cloudinary.com/dzvtizxtq/image/upload/v1682490851/ankasafy/pngtree-character-default-avatar-image_2237203_btsaoh.jpg",
+    postcode: "Post Code",
+    address: "Address"
+  });
+
+
+  useEffect(() => {
+    if (cookies.token) {
+      setStorage(jwtDecode(cookies.token));
+    }
+  }, [cookies]);
+
+  useEffect(() => {
+    if (storage) {
+      setLocalStorage({
+        fullname: storage.fullname,
+        email: storage.email,
+        city: storage.city,
+        nationality: storage.nationality,
+        phone: storage.phone,
+        photo: storage.photo,
+        postcode: storage.postcode,
+        address: storage.address
+      });
+    }
+    
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [storage]);
+
+  const handlePhoto = (e) => {
+    setPhoto(e.target.files[0]);
+    setCurrentPhoto(URL.createObjectURL(e.target.files[0]));
+  };
+
+  const router = useRouter();
+  const url = "http://localhost:4000";
+
   const Logout = () => {
     removeCookie("token", { path: "/" });
     router.replace("/auth/login");
   };
 
+  const updatePhoto = async () => {
+    const formData = new FormData();
+    formData.append("photo", photo);
+    console.log(formData);
+    await axios
+      .put(url + `/users/update-profile-photo`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${cookies.token}`,
+        },
+      })
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
+  let data = {
+    fullname,
+    phone,
+    city,
+    address,
+    postcode,
+    nationality
+  }
+
+  const updateUser = async (e) => {
+  e.preventDefault()
+  await axios.put(url + `/users/update-profile-information`, data, {
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "application/json",
+      Authorization: `Bearer ${cookies.token}`,
+    },
+  }).then((res) => {
+    console.log(res);
+    console.log(data);
+    setTimeout(() => {
+    Logout()
+    },2000)
+  }).catch((err) => {
+    console.log(err);
+  })    
+  }
 
   return (
     <>
@@ -64,63 +131,79 @@ function MyProfile() {
 
         <div className={`container mx-auto px-4 mt-3 ${poppins.className}`}>
           <div className="flex flex-row gap-4 mt-14">
-            <div className="flex flex-col w-2/6 justify-center mx-10 rounded-xl" style={{ backgroundColor: "white" }}>
-              <div className="flex justify-center mt-8">
-                <Image src={dummy} alt="dummy" style={{ borderWidth: 3, borderRadius: "4rem", borderColor: "#2395FF", width: "8rem" }} />
-              </div>
-              <div className="flex justify-center items-center mt-6 rounded-lg text-sm py-1 md:py-3 font-semibold border-blue-500 border-[2px] sm:text-base mx-28" style={{ backgroundColor: "white", color: "#2395FF" }}>
-                <button type="submit" style={{ width: "7rem" }}>
-                  Select Photo
-                </button>
-              </div>
-              <div className="flex justify-center mt-7 text-xl font-bold">Mike Kowalski</div>
-              <div className="flex flex-row justify-center items-center mt-2 gap-1 text-base">
-                <PlaceIcon color="primary" />
-                <div>Medan, Indonesia</div>
-              </div>
+            {/* {dataFormat?.map((item, index) => ( */}
+              <div className="flex flex-col w-2/6 justify-center mx-10 rounded-xl" style={{ backgroundColor: "white" }}>
+                <form onSubmit={updatePhoto}>
+                  <div className="flex justify-center mt-8">
+                    <Image src={currentPhoto || localStorage.photo} priority alt="dummy" width={128} height={128} style={{ borderWidth: 3, borderRadius: "4rem", borderColor: "#2395FF", width: "8rem" }} />
+                  </div>
+                  <div className="flex flex-row justify-center">
+                    <div className="flex mt-6 rounded-lg text-sm py-1 md:py-3 font-semibold border-blue-500 border-[2px] sm:text-base" style={{ backgroundColor: "white", color: "#2395FF" }}>
+                      <label for="file-input" class="ps-2 pe-2" style={{ cursor: "pointer" }}>
+                        Select Photo
+                      </label>
+                      <input id="file-input" type="file" style={{ position: "absolute", opacity: 0, width: 0, height: 0, pointerEvents: "none" }} onChange={handlePhoto} />
+                    </div>
+                    {currentPhoto ? (
+                      <button type="submit" className="flex mt-6 ms-2 rounded-lg text-sm py-1 md:py-3 px-2 font-semibold border-blue-400 border-[2px] sm:text-base bg-blue-400 text-white">
+                        Change photo
+                      </button>
+                    ) : (
+                      <div></div>
+                    )}
+                  </div>
+                </form>
+                <div className="flex justify-center mt-7 text-xl font-bold">{localStorage.fullname}</div>
+                <div className="flex flex-row justify-center items-center mt-2 gap-1 text-base">
+                  <PlaceIcon color="primary" />
+                  <div>
+                    {localStorage.city}, {localStorage.nationality}
+                  </div>
+                </div>
 
-              <div className="flex flex-row justify-between mx-10 mt-10">
-                <div className="font-bold text-base">Cards</div>
-                <div className="font-bold text-base text-blue-400">+ Add</div>
-              </div>
+                <div className="flex flex-row justify-between mx-10 mt-10">
+                  <div className="font-bold text-base">Cards</div>
+                  <div className="font-bold text-base text-blue-400">+ Add</div>
+                </div>
 
-              <div className="flex flex-col mx-10 text-white mt-3 rounded-xl shadow-lg shadow-blue-500/50" style={{ backgroundColor: "#2395FF" }}>
-                <div className="pt-4 ps-6 font-bold tracking-widest">4441 1235 5512 5551</div>
-                <div className="flex flex-row justify-between pt-4 pb-4 ps-6 pe-6 font-light">
-                  <div>X Card</div>
-                  <div>$ 1,440.2</div>
+                <div className="flex flex-col mx-10 text-white mt-3 rounded-xl shadow-lg shadow-blue-500/50" style={{ backgroundColor: "#2395FF" }}>
+                  <div className="pt-4 ps-6 font-bold tracking-widest">4441 1235 5512 5551</div>
+                  <div className="flex flex-row justify-between pt-4 pb-4 ps-6 pe-6 font-light">
+                    <div>X Card</div>
+                    <div>$ 1,440.2</div>
+                  </div>
                 </div>
-              </div>
 
-              <div className="flex flex-row justify-between mx-14 mt-10">
-                <div className="flex flex-row gap-8 font-bold">
-                  <AccountCircleIcon />
-                  <div>Profile</div>
+                <div className="flex flex-row justify-between mx-14 mt-10">
+                  <div className="flex flex-row gap-8 font-bold">
+                    <AccountCircleIcon />
+                    <div>Profile</div>
+                  </div>
+                  <KeyboardArrowUpIcon style={{ rotate: "90deg" }} />
                 </div>
-                <KeyboardArrowUpIcon style={{ rotate: "90deg" }} />
-              </div>
-              <div className="flex flex-row justify-between mx-14 mt-8">
-                <div className="flex flex-row gap-8 font-bold">
-                  <StarIcon />
-                  <div>My Review</div>
+                <div className="flex flex-row justify-between mx-14 mt-8">
+                  <div className="flex flex-row gap-8 font-bold">
+                    <StarIcon />
+                    <div>My Review</div>
+                  </div>
+                  <KeyboardArrowUpIcon style={{ rotate: "90deg" }} />
                 </div>
-                <KeyboardArrowUpIcon style={{ rotate: "90deg" }} />
-              </div>
-              <div className="flex flex-row justify-between mx-14 mt-8">
-                <div className="flex flex-row gap-8 font-bold">
-                  <SettingsIcon />
-                  <div>Settings</div>
+                <div className="flex flex-row justify-between mx-14 mt-8">
+                  <div className="flex flex-row gap-8 font-bold">
+                    <SettingsIcon />
+                    <div>Settings</div>
+                  </div>
+                  <KeyboardArrowUpIcon style={{ rotate: "90deg" }} />
                 </div>
-                <KeyboardArrowUpIcon style={{ rotate: "90deg" }} />
-              </div>
-              <div onClick={Logout} className="flex flex-row justify-between mx-14 mt-8 mb-10" style={{cursor:'pointer'}}>
-                <div className="flex flex-row gap-8 font-bold">
-                  <LogoutIcon sx={{ color: pink[500] }} />
-                  <div style={{ color: "#F24545" }}>Logout</div>
+                <div onClick={Logout} className="flex flex-row justify-between mx-14 mt-8 mb-10" style={{ cursor: "pointer" }}>
+                  <div className="flex flex-row gap-8 font-bold">
+                    <LogoutIcon sx={{ color: pink[500] }} />
+                    <div style={{ color: "#F24545" }}>Logout</div>
+                  </div>
+                  <KeyboardArrowUpIcon sx={{ color: pink[500] }} style={{ rotate: "90deg" }} />
                 </div>
-                <KeyboardArrowUpIcon sx={{ color: pink[500] }} style={{ rotate: "90deg" }} />
               </div>
-            </div>
+            {/* ))} */}
 
             <div className="flex flex-col w-4/6">
               <div className="flex flex-col rounded-xl" style={{ backgroundColor: "white" }}>
@@ -131,46 +214,42 @@ function MyProfile() {
                 </div>
                 <div className="flex flex-row mt-4 px-6">
                   <div className="flex flex-col w-3/6 px-6">
-                    <div className="font-bold">Contact</div>
-                    <FormControl className="gap-6">
-                      <TextField id="standard-password-input" label="Email" type="text" autoComplete="current-password" variant="standard" placeholder="Mike Kowalski" />
+                    <div className="font-bold mb-2">Contact</div>
+                    <FormControl>
+                      <label for="standard-password-input text-xxs">Email</label>
+                      <TextField id="standard-password-input" type="text" autoComplete="current-password" variant="standard" placeholder={localStorage.email} value={localStorage.email}/>
                       <div className="flex flex-row gap-2">
-                        <div>
-                          <TextField id="standard-select-currency" select label="Phone Number" defaultValue="ID" helperText="Code number" variant="standard">
-                            {numbers.map((option) => (
-                              <MenuItem key={option.value} value={option.value}>
-                                {option.label}
-                              </MenuItem>
-                            ))}
-                          </TextField>
-                        </div>
-                        <div>
-                          <TextField id="standard-password-input" label="  " type="text" autoComplete="current-password" variant="standard" placeholder="1234567" />
+                        <div className="mt-6">
+                        <TextField required label="Phone Number" value={phone ? phone : localStorage.phone} onChange={(e) => setPhone(e.target.value) } variant='standard' color='primary' />
                         </div>
                       </div>
                     </FormControl>
                   </div>
 
                   <div className="flex flex-col w-3/6 px-6">
-                    <div className="font-bold">Biodata</div>
-                    <FormControl className="gap-6">
-                      <TextField id="standard-password-input" label="Full Name" type="text" autoComplete="current-password" variant="standard" placeholder="Mike Kowalski" />
+                    <div className="font-bold mb-2">Biodata</div>
+                    <FormControl>
+                    <label for="standard-password-input text-xxs">Fullname</label>
+                      <TextField required id="standard-password-input" type="text" autoComplete="current-password" variant="standard" value={fullname ? fullname : localStorage.fullname} onChange={(e) => setFullname(e.target.value) }/>
 
-                      <TextField id="standard-select-currency" select label="City" defaultValue="ID" variant="standard">
-                        {nationality.map((option) => (
-                          <MenuItem key={option.value} value={option.value}>
-                            {option.label}
-                          </MenuItem>
-                        ))}
-                      </TextField>
+                      <label for="standard-password-input text-xxs" className="mt-4">City</label>
+                      <TextField required id="standard-password-input" type="text" autoComplete="current-password" variant="standard" value={city ? city : localStorage.city} onChange={(e) => setCity(e.target.value) }/>
 
-                      <TextField id="standard-password-input" label="Address" type="text" autoComplete="current-password" variant="standard" placeholder="Medan, Indonesia" />
+                      <div className="flex flex-row">
+                      <label for="standard-password-input text-xxs" className="mt-4">Nationality Code</label>
+                      <span className="text-xs flex items-end pb-1 ms-1 font-bold">&#40;example: Indonesia = IDN&#41;</span>
+                      </div>
+                      <TextField required id="standard-password-input" type="text" autoComplete="current-password" variant="standard" value={nationality ? nationality : localStorage.nationality} onChange={(e) => setNationality(e.target.value) }/>
 
-                      <TextField id="standard-password-input" label="Post Code" type="text" autoComplete="current-password" variant="standard" placeholder="55555" />
+                      <label for="standard-password-input text-xxs" className="mt-4">Address</label>
+                      <TextField required id="standard-password-input" type="text" autoComplete="current-password" variant="standard" value={address ? address : localStorage.address} onChange={(e) => setAddress(e.target.value) }/>
+
+                      <label for="standard-password-input text-xxs" className="mt-4">Post Code</label>
+                      <TextField required id="standard-password-input" type="text" autoComplete="current-password" variant="standard" value={postcode ? postcode : localStorage.postcode} onChange={(e) => setPostcode(e.target.value) }/>
                     </FormControl>
 
                     <div className="flex justify-end">
-                      <button type="submit" className="my-8 rounded-lg text-sm sm:text-base font-semibold py-3 px-12 shadow-lg shadow-blue-500/50" style={{ backgroundColor: "#2395FF", color: "white" }}>
+                      <button onClick={updateUser} className="my-8 rounded-lg text-sm sm:text-base font-semibold py-3 px-12 shadow-lg shadow-blue-500/50" style={{ backgroundColor: "#2395FF", color: "white" }}>
                         Save
                       </button>
                     </div>

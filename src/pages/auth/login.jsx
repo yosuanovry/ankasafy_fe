@@ -15,7 +15,7 @@ function Login() {
   const [password, setPassword] = useState("");
 
   const router = useRouter();
-  const url = `https://drab-gray-bull-ring.cyclic.app`;
+  const url = `http://localhost:4000`;
 
   let data = {
     email,
@@ -38,7 +38,7 @@ function Login() {
           path: "/",
         });
         
-        router.replace("/main/ticketing");
+        router.replace("/profile/myprofile");
       })
       .catch((err) => {
         console.log(err);

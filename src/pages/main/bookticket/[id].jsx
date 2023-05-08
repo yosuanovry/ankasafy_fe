@@ -1,20 +1,57 @@
-import React, {useEffect} from "react";
+import React, {useState, useEffect} from "react";
 import Navbar from "@/component/navbar";
 import Footer from "@/component/footer";
 import Image from "next/image";
 import { Poppins } from "next/font/google";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import garudaind from "../../../public/assets/garudaind.png";
+import garudaind from "../../../../public/assets/garudaind.png";
 import FlightTakeoffIcon from "@mui/icons-material/FlightTakeoff";
-import generateBarcode from '../../component/barcode'
+import generateBarcode from '../../../component/barcode';
+import axios from "axios";
+import { useRouter } from "next/router";
+import { useCookies } from "react-cookie";
+
 
 const poppins = Poppins({ weight: "400", subsets: ["latin"] });
 
-function BookTicket() {
+export default function BookTicket() {
+  const [datas, setDatas] = useState({
+    id: "1234 A 4 234123",
+    photo: "https://res.cloudinary.com/dzvtizxtq/image/upload/v1683362284/ankasafy/xaqwenawmotuqdceysiy.jpg",
+    departure_nationality: "IDN",
+    arrival_nationality: "JPN",
+    code_type: "AB-221",
+    class_type: "Economy",
+    terminal: "A",
+    Gate: "221",
+    departure_time: "Monday, 20 July'20 - 12:33"
+  });
+  const [loading, setLoading] = useState();
+  const [cookies, setCookie, removeCookie] = useCookies(["user"]);
 
-    useEffect(() => {
-        generateBarcode('barcodeCanvas', '1234 5678 90AS 6543 21CV')
-    },[])
+  const router = useRouter();
+  const url = "http://localhost:4000";
+  const id = router.query.id;
+
+
+  useEffect(() => {
+    setLoading(true)
+    axios.get(`${url}/bookings/detail/${id}`, {
+      headers: {
+        "Authorization": `Bearer ${cookies.token}`
+      }
+    }).then((res) => {
+    console.log(res.data.data[0])
+    setDatas(res.data.data[0]);
+    
+    setLoading(false);
+    });
+  },[id, cookies.token])
+
+  useEffect(() => {
+    generateBarcode('barcodeCanvas', datas.id)
+  },[])
+
 
   return (
     <>
@@ -26,41 +63,42 @@ function BookTicket() {
               <div className="font-bold text-xl">Booking Pass</div>
               <MoreVertIcon color="primary" />
             </div>
+            
             <div className="flex flex-row border-2 rounded-xl">
               <div className="flex flex-col sm:w-4/6">
                 <div className="flex flex-col justify-between p-4">
                   <div className="flex flex-row items-center">
-                    <Image src={garudaind} alt="garuda logo" style={{ width: "35%" }} />
+                    <Image src={garudaind} width={100} height={100} alt="garuda logo" style={{ width: "35%" }} />
                     <div className="flex flex-row items-center justify-start text-sm sm:text-2xl font-bold ps-10 gap-4">
-                      <div className="flex">IDN</div>
+                      <div className="flex">{datas.departure_nationality}</div>
                       <FlightTakeoffIcon style={{ width: "2rem" }} color="disabled" />
-                      <div>JPN</div>
+                      <div>{datas.arrival_nationality}</div>
                     </div>
                   </div>
                   <div className="flex flex-row mt-10 gap-32">
                     <div className="flex flex-col gap-1">
                       <div className="text-sm text-gray-400">Code</div>
-                      <div className="text-sm">AB-221</div>
+                      <div className="text-sm">{datas.code_type}</div>
                     </div>
                     <div className="flex flex-col gap-1">
                       <div className="text-sm text-gray-400">Class</div>
-                      <div className="text-sm">Economy</div>
+                      <div className="text-sm">{datas.class_type}</div>
                     </div>
                   </div>
                   <div className="flex flex-row mt-4 gap-[7.1rem]">
                     <div className="flex flex-col gap-1">
                       <div className="text-sm text-gray-400">Terminal</div>
-                      <div className="text-sm">A</div>
+                      <div className="text-sm">{datas.terminal}</div>
                     </div>
                     <div className="flex flex-col gap-1"> 
                       <div className="text-sm text-gray-400">Gate</div>
-                      <div className="text-sm">221</div>
+                      <div className="text-sm">{datas.gate}</div>
                     </div>
                   </div>
                   <div className="flex flex-row mt-8">
                     <div className="flex flex-col gap-1">
                       <div className="text-sm text-gray-400">Departure</div>
-                      <div className="text-sm">Monday, 20 July ‘20 - 12:33</div>
+                      <div className="text-sm">{datas.departure_time}</div>
                     </div>
                   </div>
                 </div>
@@ -78,4 +116,3 @@ function BookTicket() {
   );
 }
 
-export default BookTicket;

@@ -17,45 +17,27 @@ const poppins = Poppins({ weight: "400", subsets: ["latin"] });
 
 function Navbar() {
   const [cookies, setCookie, removeCookie] = useCookies(["user"]);
-  const [storage, setStorage] = useState(null);
-  // const [localStorage, setLocalStorage] = useState({
-  //   photo: "https://res.cloudinary.com/dzvtizxtq/image/upload/v1682490851/ankasafy/pngtree-character-default-avatar-image_2237203_btsaoh.jpg",
-  // });
-
-  const url = `https://drab-gray-bull-ring.cyclic.app`
-
-  // useEffect(() => {
-  //   if (cookies.token) {
-  //     setStorage(jwtDecode(cookies.token));
-  //   }
-  // }, [cookies]);
-
-  // useEffect(() => {
-  //   if (storage) {
-  //     setLocalStorage({
-  //       photo: storage.photo,
-  //     });
-  //     console.log(storage)
-  //   }
-  // }, [storage]);
+  const [storage, setStorage] = useState();
+  const [localStorage, setLocalStorage] = useState({
+    photo: "https://res.cloudinary.com/dzvtizxtq/image/upload/v1682490851/ankasafy/pngtree-character-default-avatar-image_2237203_btsaoh.jpg",
+  });
 
   useEffect(() => {
-    getUserData()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  })
+    if (cookies.token) {
+      setStorage(jwtDecode(cookies.token));
+    }
+  }, [cookies]);
 
-  const getUserData = async () => {
-    await axios.get(url + `/users/profile`, {
-      headers: {
-        "Authorization": `Bearer ${cookies.token}`
-      }
-    }).then((res) => {
-      console.log(res.data.data)
-      setStorage(res.data.data)
-    }).catch((err) => {
-      console.log(err)
-    })
-  }
+  useEffect(() => {
+    if (storage) {
+      setLocalStorage({
+        photo: storage.photo,
+      });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [storage]);
+
+  
 
   if (!cookies.token) {
     return (
@@ -115,11 +97,11 @@ function Navbar() {
         <div className="flex items-center gap-4">
           <MailOutlineIcon style={{ width: "25%" }} />
           <NotificationsNoneIcon style={{ width: "25%" }} />
-            {storage?.map((item,index) => (
-          <Link key={index} href="/profile/myprofile">
-              <Image src={item.photo} alt="dummy" width={120} height={120} style={{ borderWidth: 1, borderRadius: "1.5rem", borderColor: "#2395FF", width: "100%" }} />
+           
+          <Link href="/profile/myprofile">
+              <Image src={localStorage.photo} priority alt="dummy" width={60} height={60} style={{ borderWidth: 1, borderRadius: "1.5rem", borderColor: "#2395FF", width: "100%" }} />
           </Link>
-            ))}
+            
         </div>
       </div>
     );

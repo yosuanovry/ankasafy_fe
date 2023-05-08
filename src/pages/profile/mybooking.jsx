@@ -3,7 +3,6 @@ import Footer from "@/component/footer";
 import Image from "next/image";
 import { Poppins } from "next/font/google";
 import FlightTakeoffIcon from "@mui/icons-material/FlightTakeoff";
-import dummy from "../../../public/assets/dummy.png";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import PlaceIcon from "@mui/icons-material/Place";
@@ -11,21 +10,133 @@ import StarIcon from "@mui/icons-material/Star";
 import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { pink } from "@mui/material/colors";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import { useCookies } from "react-cookie";
+import { useState, useEffect } from 'react';
+import jwtDecode from "jwt-decode";
+import axios from "axios";
 
 const poppins = Poppins({ weight: "400", subsets: ["latin"] });
 
 function MyBooking() {
   const [cookies, setCookie, removeCookie] = useCookies(["user"]);
+  const [loading, setLoading] = useState(false);
+  const [datas, setDatas] = useState(null)
+  const [storage, setStorage] = useState();
+  const [localStorage, setLocalStorage] = useState({
+    fullname: "Full Name",
+    email: "Email",
+    city: "City",
+    nationality: "Nationality",
+    phone: "Phone",
+    photo: "https://res.cloudinary.com/dzvtizxtq/image/upload/v1682490851/ankasafy/pngtree-character-default-avatar-image_2237203_btsaoh.jpg",
+    postcode: "Post Code",
+    address: "Address"
+  });
 
-  const router = useRouter()
+  const router = useRouter();
+  const url = "http://localhost:4000";
+
+  useEffect(() => {
+    if (cookies.token) {
+      setStorage(jwtDecode(cookies.token));
+    }
+  }, [cookies]);
+
+  useEffect(() => {
+    if (storage) {
+      setLocalStorage({
+        fullname: storage.fullname,
+        email: storage.email,
+        city: storage.city,
+        nationality: storage.nationality,
+        phone: storage.phone,
+        photo: storage.photo,
+        postcode: storage.postcode,
+        address: storage.address
+      });
+    }
+    
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [storage]);
+  
+  useEffect(() => {
+    setLoading(true)
+    axios.get(`${url}/bookings/mybookings`, {
+      headers: {
+        "Authorization": `Bearer ${cookies.token}`
+      }
+    }).then((res) => {
+    console.log(res.data.data)
+    setDatas(res.data.data);
+    setLoading(false);
+    });
+  },[cookies.token])
+
+  const dataFormat = datas?.map((item) => {
+    const timestamp1 = new Date(item.departure_time);
+    const timestamp2 = new Date(item.arrival_time);
+
+    const validateIsPaid = (data) => {
+      if(data === 1) {
+        return (
+          <button className="p-4 text-white text-sm font-bold rounded-lg shadow-lg" style={{backgroundColor:'#FF7F23'}}>Waiting for payment</button>
+        )
+      } else if(data === 2) {
+        return (
+          <button className="p-4 ms-5 text-white text-sm font-bold rounded-lg shadow-lg" style={{backgroundColor:'#4FCF4D'}}>E-ticket Issued</button>
+        )
+      }
+      return null
+    }
+
+    const timeFormat1 = timestamp1.toLocaleDateString("id-ID", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      second: "numeric",
+    });
+    const timeFormat2 = timestamp2.toLocaleDateString("id-ID", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      second: "numeric",
+    });
+
+    const timeDifference = Math.abs(timestamp2 - timestamp1);
+    const hour = Math.floor(timeDifference / 3600000); // menghitung timeDifference dalam jam
+    const minute = Math.floor((timeDifference % 3600000) / 60000); // menghitung timeDifference dalam menit
+
+    let diffStr = "";
+
+    if (hour > 0) {
+      diffStr += `${hour} Hour${hour > 1 ? "s" : ""}`;
+    }
+    if (minute > 0) {
+      diffStr += `${diffStr ? " " : ""}${minute} minute${minute > 1 ? "s" : ""}`;
+    }
+
+    return {
+      ...item,
+      departure_time: timeFormat1,
+      arrival_time: timeFormat2,
+      difference: diffStr,
+      is_paid: validateIsPaid(item.is_paid)
+    };
+  });
+
   
   const Logout = () => {
     removeCookie("token", { path: "/" });
     router.replace("/auth/login");
   };
+
 
   return (
     <>
@@ -36,17 +147,12 @@ function MyBooking() {
           <div className="flex flex-row gap-4 mt-14">
             <div className="flex flex-col w-2/6 justify-center mx-10 rounded-xl" style={{ backgroundColor: "white" }}>
               <div className="flex justify-center mt-8">
-                <Image src={dummy} alt="dummy" style={{ borderWidth: 3, borderRadius: "4rem", borderColor: "#2395FF", width: "8rem" }} />
+                <Image src={localStorage.photo} alt="dummy" width={128} height={128} style={{ borderWidth: 3, borderRadius: "4rem", borderColor: "#2395FF", width: "8rem" }} />
               </div>
-              <div className="flex justify-center items-center mt-6 rounded-lg text-sm py-1 md:py-3 font-semibold border-blue-500 border-[2px] sm:text-base mx-28" style={{ backgroundColor: "white", color: "#2395FF" }}>
-                <button type="submit" style={{ width: "7rem" }}>
-                  Select Photo
-                </button>
-              </div>
-              <div className="flex justify-center mt-7 text-xl font-bold">Mike Kowalski</div>
+              <div className="flex justify-center mt-7 text-xl font-bold">{localStorage.fullname}</div>
               <div className="flex flex-row justify-center items-center mt-2 gap-1 text-base">
                 <PlaceIcon color="primary" />
-                <div>Medan, Indonesia</div>
+                <div>{localStorage.city}, {localStorage.nationality}</div>
               </div>
 
               <div className="flex flex-row justify-between mx-10 mt-10">
@@ -92,7 +198,8 @@ function MyBooking() {
               </div>
             </div>
 
-            <div className="flex flex-col w-4/6">
+           
+              <div  className="flex flex-col w-4/6">
               <div className="flex flex-col rounded-xl" style={{ backgroundColor: "white" }}>
                 <div className="pt-6 ps-6 tracking-widest text-sm text-blue-400">MY BOOKING</div>
                 <div className="flex flex-row pt-2 pb-6 px-6 justify-between items-end">
@@ -101,18 +208,20 @@ function MyBooking() {
                 </div>
               </div>
 
-              <div className="flex flex-col rounded-xl mt-8" style={{ backgroundColor: "white" }}>
-                <div className="pt-6 ps-6 text-sm">Monday, 20 July ‘20 - 12:33</div>
+              {dataFormat?.map((item,index) => (
+                <div key={index}>
+                <div className="flex flex-col rounded-xl mt-8" style={{ backgroundColor: "white" }}>
+                <div className="pt-6 ps-6 text-sm">{item.departure_time}</div>
                 <div className="flex flex-row items-center justify-start text-sm sm:text-xl font-bold ps-6 gap-4 mt-2">
-                  <div className="flex">IDN</div>
+                  <div className="flex">{item.departure_nationality}</div>
                   <FlightTakeoffIcon style={{ width: "2rem" }} color="disabled" />
-                  <div>JPN</div>
+                  <div>{item.arrival_nationality}</div>
                 </div>
-                <div className="pt-2 px-6 pb-4 text-sm text-gray-400 border-b-2">Garuda Indonesia, AB-221</div>
+                <div className="pt-2 px-6 pb-4 text-sm text-gray-400 border-b-2">{item.airlines_name}, {item.code_type}</div>
                 <div className="flex flex-row px-6 py-6 justify-between items-center">
                   <div className="flex flex-row items-center gap-20">
                     <div className="text-gray-500 font-bold">Status</div>
-                    <div className="p-[1rem] text-white text-sm font-bold rounded-lg shadow-lg" style={{backgroundColor:'#FF7F23'}}>Waiting for payment</div>
+                    <div onClick={()=>router.push(`/main/bookticket/${item.id}`)}>{item.is_paid}</div>
                   </div>
                   <div className="flex flex-row items-center gap-2">
                     <div className="text-blue-400 text-sm font-bold">View Details</div>
@@ -120,32 +229,12 @@ function MyBooking() {
                   </div>
                 </div>
               </div>
-
-              <div className="flex flex-col rounded-xl mt-8" style={{ backgroundColor: "white" }}>
-                <div className="pt-6 ps-6 text-sm">Monday, 20 July ‘20 - 12:33</div>
-                <div className="flex flex-row items-center justify-start text-sm sm:text-xl font-bold ps-6 gap-4 mt-2">
-                  <div className="flex">IDN</div>
-                  <FlightTakeoffIcon style={{ width: "2rem" }} color="disabled" />
-                  <div>JPN</div>
-                </div>
-                <div className="pt-2 px-6 pb-4 text-sm text-gray-400 border-b-2">Garuda Indonesia, AB-221</div>
-                <div className="flex flex-row px-6 py-6 justify-between items-center">
-                  <div className="flex flex-row items-center gap-[6.5rem]">
-                    <div className="text-gray-500 font-bold">Status</div>
-                    <Link href="/main/bookticket">
-                    <div className="p-[1rem] text-white text-sm font-bold rounded-lg shadow-lg" style={{backgroundColor:'#4FCF4D'}}>Eticket issued</div>
-                    </Link>
-                  </div>
-                  <div className="flex flex-row items-center gap-2">
-                    <div className="text-blue-400 text-sm font-bold">View Details</div>
-                    <KeyboardArrowUpIcon color="primary" style={{ rotate: "180deg" }} />
-                  </div>
-                </div>
-                <div className="flex justify-end">
-                  
-                </div>
               </div>
+              ))}
+              
+              
             </div>
+            
           </div>
         </div>
       </div>

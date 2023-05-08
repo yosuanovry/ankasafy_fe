@@ -11,10 +11,146 @@ import LuggageIcon from "@mui/icons-material/Luggage";
 import LunchDiningIcon from "@mui/icons-material/LunchDining";
 import WifiIcon from "@mui/icons-material/Wifi";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { useRouter } from "next/router";
 
 const poppins = Poppins({ weight: "400", subsets: ["latin"] });
 
 function Ticketing() {
+  const [datas, setDatas] = useState();
+
+  const url = "http://localhost:4000";
+  const router = useRouter()
+
+  const getTickets = async () => {
+    axios
+      .get(url + `/tickets`)
+      .then((res) => {
+        console.log(res.data.data);
+        setDatas(res.data.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  useEffect(() => {
+    getTickets();
+  }, []);
+
+  const dataFormat = datas?.map((item) => {
+    const timestamp1 = new Date(item.departure_time);
+    const timestamp2 = new Date(item.arrival_time);
+
+    const validateTransits = (data) => {
+      if (data === 1) {
+        return "Direct";
+      } else if (data === 2) {
+        return "2 Direct";
+      } else if (data === 3) {
+        return "1 Transit";
+      } else if (data === 4) {
+        return "2 Transit";
+      }
+      return null;
+    };
+
+    const validateFacilities = (data) => {
+      if (data === 1) {
+        return (
+          <div className="flex flex-row items-center sm:gap-1">
+            <LuggageIcon color="disabled" />
+          </div>
+        );
+      } else if (data === 2) {
+        return (
+          <div className="flex flex-row items-center sm:gap-1">
+            <LunchDiningIcon color="disabled" />
+          </div>
+        );
+      } else if (data === 3) {
+        return (
+          <div className="flex flex-row items-center sm:gap-1">
+            <WifiIcon color="disabled" />
+          </div>
+        );
+      } else if (data === 4) {
+        return (
+          <div className="flex flex-row items-center sm:gap-1">
+            <LuggageIcon color="disabled" />
+            <LunchDiningIcon color="disabled" />
+          </div>
+        );
+      } else if (data === 5) {
+        return (
+        <div className="flex flex-row items-center sm:gap-1">
+          <LuggageIcon color="disabled" />
+          <WifiIcon color="disabled" />
+        </div>
+        );
+
+      } else if (data === 6) {
+        return (
+          <div className="flex flex-row items-center sm:gap-1">
+          <LunchDiningIcon color="disabled" />
+          <WifiIcon color="disabled" />
+        </div>
+        );
+      } else if (data === 7) {
+        return (
+          <div className="flex flex-row items-center sm:gap-1">
+          <LuggageIcon color="disabled" />
+          <LunchDiningIcon color="disabled" />
+          <WifiIcon color="disabled" />
+        </div>
+        );
+      }
+      return null
+    };
+
+    const timeFormat1 = timestamp1.toLocaleDateString("id-ID", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      second: "numeric",
+    });
+    const timeFormat2 = timestamp2.toLocaleDateString("id-ID", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      second: "numeric",
+    });
+
+    const timeDifference = Math.abs(timestamp2 - timestamp1);
+    const hour = Math.floor(timeDifference / 3600000); // menghitung timeDifference dalam jam
+    const minute = Math.floor((timeDifference % 3600000) / 60000); // menghitung timeDifference dalam menit
+
+    let diffStr = "";
+
+    if (hour > 0) {
+      diffStr += `${hour} Hour${hour > 1 ? "s" : ""}`;
+    }
+    if (minute > 0) {
+      diffStr += `${diffStr ? " " : ""}${minute} minute${minute > 1 ? "s" : ""}`;
+    }
+
+    return {
+      ...item,
+      departure_time: timeFormat1,
+      arrival_time: timeFormat2,
+      difference: diffStr,
+      transits: validateTransits(item.transits),
+      facilities: validateFacilities(item.facilities)
+    };
+  });
+
   return (
     <>
       <div id="__next" className="h-full w-full" style={{ backgroundColor: "#F5F6FA" }}>
@@ -46,9 +182,9 @@ function Ticketing() {
           </div>
         </div>
 
-        <div className={`container mx-auto px-4 mt-3 ${poppins.className}`}>
+        <div className={`container mx-auto px-4 mt-6 ${poppins.className}`}>
           <div className="flex flex-row gap-4">
-            <div className="flex flex-col w-2/6 justify-center">
+            <div className="flex flex-col w-3/12 justify-center">
               <div className="flex flex-row justify-between items-end">
                 <div className="text-lg font-bold sm:text-xl">Filter</div>
                 <div className="text-sm text-blue-500 font-bold sm:text-md">Reset</div>
@@ -158,62 +294,62 @@ function Ticketing() {
               </div>
             </div>
 
-            <div className="flex flex-col w-4/6 ">
-              <div className="flex flex-row justify-between items-center sm:items-end">
-                <div className="flex flex-col sm:flex-row sm:items-end sm:gap-1 font-bold">
-                  <div className="text-md sm:text-lg">Select Ticket</div>
-                  <div className="text-xs sm:text-md text-gray-400 font-light">&#40;6 flight found&#41;</div>
+              <div className="flex flex-col w-9/12 ">
+                <div className="flex flex-row justify-between items-center sm:items-end">
+                  <div className="flex flex-col sm:flex-row sm:items-end sm:gap-1 font-bold">
+                    <div className="text-md sm:text-lg">Select Ticket</div>
+                    <div className="text-xs sm:text-md text-gray-400 font-light">&#40;6 flight found&#41;</div>
+                  </div>
+                  <div className="flex flex-row items-center gap-2">
+                    <div className="font-bold text-sm">Sort by</div>
+                    <RepeatIcon style={{ width: 15, rotate: "90deg" }} />
+                  </div>
                 </div>
-                <div className="flex flex-row items-center gap-2">
-                  <div className="font-bold text-sm">Sort by</div>
-                  <RepeatIcon style={{ width: 15, rotate: "90deg" }} />
+            {dataFormat?.map((item, index) => (
+                <div  key={index} className="container mx-auto px-4 bg-white mt-5 rounded-xl">
+                  <div className="flex flex-col gap-2">
+                    <div className="flex flex-row items-center gap-4 mt-4">
+                      <Image src={item.airline_photo} width={100} height={100} alt="garuda logo" style={{ width: "10%" }} />
+                      <div className="text-xs sm:text-md">{item.airline}</div>
+                    </div>
+                    <div className="flex flex-row justify-between mt-2 gap-4">
+                      <div className="flex sm:gap-4">
+                        <div className="flex flex-col">
+                          <div className="text-sm font-semibold sm:text-lg">{item.departure_nationality}</div>
+                          <div className="text-xxs sm:text-xs">{item.departure_time}</div>
+                        </div>
+                        <div className="flex justify-center">
+                          <FlightTakeoffIcon style={{ width: "100%" }} color="disabled" />
+                        </div>
+                        <div className="flex flex-col">
+                          <div className="text-sm font-semibold sm:text-lg">{item.arrival_nationality}</div>
+                          <div className="text-xxs sm:text-xs">{item.arrival_time}</div>
+                        </div>
+                      </div>
+                      <div className="flex flex-col text-xxxs sm:text-sm justify-start sm:justify-center sm:items-center ms-1 text-gray-400" style={{ width: "20%" }}>
+                        <div className="flex justify-start font-bold">{item.difference}</div>
+                        <div className="flex justify-start">&#40;{item.transits}&#41;</div>
+                      </div>
+                        {item.facilities}
+                      <div className="text-blue-400 text-xxxs sm:text-sm flex justify-center items-center ms-1 font-semibold">
+                        ${item.price} <span className="text-gray-400">/pax</span>
+                      </div>
+                      <div className="flex items-center">
+                        <div style={{cursor:"pointer"}} onClick={() => {
+                          router.push(`/main/bookings/${item.id}`)}
+                        }>
+                          <span className="text-xs sm:text-sm font-semibold bg-blue-400 p-1 rounded-lg text-white ms-1 sm:py-3 sm:px-10 shadow-md shadow-blue-500/50">Select</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex flex-row items-center mt-1 gap-1 mb-3">
+                      <div className="flex font-bold text-blue-400 items-center text-xs sm:text-sm">View Details</div>
+                      <KeyboardArrowUpIcon className="flex items-center" color="primary" style={{ rotate: "180deg", width: "1.5rem" }} />
+                    </div>
+                  </div>
                 </div>
+                  ))}
               </div>
-              <div className="container mx-auto px-4 bg-white mt-5 rounded-xl">
-                <div className="flex flex-col gap-2">
-                  <div className="flex flex-row items-center gap-2 mt-4">
-                    <Image src={garudaind} alt="garuda logo" style={{ width: "10%" }} />
-                    <div className="text-xs sm:text-md">Garuda Indonesia</div>
-                  </div>
-                  <div className="flex flex-row justify-between mt-2">
-                    <div className="flex sm:gap-4">
-                      <div className="flex flex-col">
-                        <div className="text-sm font-semibold sm:text-lg">IDN</div>
-                        <div className="text-xxs sm:text-xs">12:33</div>
-                      </div>
-                      <div className="flex justify-center">
-                        <FlightTakeoffIcon style={{ width: "100%" }} color="disabled" />
-                      </div>
-                      <div className="flex flex-col">
-                        <div className="text-sm font-semibold sm:text-lg">JPN</div>
-                        <div className="text-xxs sm:text-xs">15:21</div>
-                      </div>
-                    </div>
-                    <div className="flex flex-col text-xxxs sm:text-sm justify-start sm:justify-center sm:items-center ms-1 text-gray-400" style={{ width: "20%" }}>
-                      <div className="flex justify-start font-bold">3 hours 11 minutes</div>
-                      <div className="flex justify-start">&#40;1 transit&#41;</div>
-                    </div>
-                    <div className="flex flex-row items-center sm:gap-1">
-                      <LuggageIcon color="disabled" />
-                      <LunchDiningIcon color="disabled" />
-                      <WifiIcon color="disabled" />
-                    </div>
-                    <div className="text-blue-400 text-xxxs sm:text-sm flex justify-center items-center ms-1 font-semibold">
-                      $ 214,00 <span className="text-gray-400">/pax</span>
-                    </div>
-                    <div className="flex items-center">
-                      <Link href="/main/booking">
-                      <span className="text-xs sm:text-sm font-semibold bg-blue-400 p-1 rounded-lg text-white ms-1 sm:py-3 sm:px-10 shadow-md shadow-blue-500/50">Select</span>
-                      </Link>
-                    </div>
-                  </div>
-                  <div className="flex flex-row items-center mt-1 gap-1 mb-3">
-                    <div className="flex font-bold text-blue-400 items-center text-xs sm:text-sm">View Details</div>
-                    <KeyboardArrowUpIcon className="flex items-center" color="primary" style={{ rotate: "180deg", width: "1.5rem" }} />
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
