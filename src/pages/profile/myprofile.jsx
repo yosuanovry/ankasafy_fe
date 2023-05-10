@@ -97,7 +97,6 @@ function MyProfile() {
   };
 
   const updatePhoto = async () => {
-    handleClose()
     const formData = new FormData();
     formData.append("photo", photo);
     console.log(formData);
@@ -126,6 +125,7 @@ function MyProfile() {
   };
 
   const updateUser = async (e) => {
+    handleClose()
     setLoading(true);
     e.preventDefault();
     await axios
