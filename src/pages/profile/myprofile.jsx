@@ -87,6 +87,7 @@ function MyProfile() {
   const handlePhoto = (e) => {
     setPhoto(e.target.files[0]);
     setCurrentPhoto(URL.createObjectURL(e.target.files[0]));
+    console.log(e.target.files[0])
   };
 
   const router = useRouter();
@@ -97,6 +98,7 @@ function MyProfile() {
   };
 
   const updatePhoto = async () => {
+    setLoading(true)
     const formData = new FormData();
     formData.append("photo", photo);
     console.log(formData);
@@ -109,6 +111,7 @@ function MyProfile() {
       })
       .then((res) => {
         console.log(res);
+        setLoading(false)
       })
       .catch((err) => {
         console.log(err);
@@ -159,7 +162,7 @@ function MyProfile() {
           <div className="flex flex-row gap-4 mt-14">
             {/* {dataFormat?.map((item, index) => ( */}
             <div className="flex flex-col w-2/6 justify-center mx-10 rounded-xl" style={{ backgroundColor: "white" }}>
-              <form onSubmit={updatePhoto}>
+              <form>
                 <div className="flex justify-center mt-8">
                   <Image src={currentPhoto || localStorage.photo} priority alt="dummy" width={128} height={128} style={{ borderWidth: 3, borderRadius: "4rem", borderColor: "#2395FF", width: "8rem" }} />
                 </div>
@@ -171,9 +174,9 @@ function MyProfile() {
                     <input id="file-input" type="file" style={{ position: "absolute", opacity: 0, width: 0, height: 0, pointerEvents: "none" }} onChange={handlePhoto} />
                   </div>
                   {currentPhoto ? (
-                    <button type="submit" className="flex mt-6 ms-2 rounded-lg text-sm py-1 md:py-3 px-2 font-semibold border-blue-400 border-[2px] sm:text-base bg-blue-400 text-white">
+                    <Button onClick={() => updatePhoto()} type="submit" className="flex mt-6 ms-2 rounded-lg text-sm py-1 md:py-3 px-2 font-semibold border-blue-400 border-[2px] sm:text-base bg-blue-400 text-white">
                       Change photo
-                    </button>
+                    </Button>
                   ) : (
                     <div></div>
                   )}
