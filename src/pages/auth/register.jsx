@@ -27,10 +27,10 @@ function Register() {
       password,
     };
     axios
-      .post(process.env.NEXT_APP_URL + `/auth/register/customer`, data)
+      .post(process.env.NEXT_APP_URL + `/register/customer`, data)
       .then((res) => {
         setLoading(true)
-        router.push(`/auth/verification/${email}`)
+        router.push(`/verification/${email}`)
       })
       .catch((err) => {
         setError(err.response.data.message)
