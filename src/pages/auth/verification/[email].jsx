@@ -18,23 +18,6 @@ function Verification() {
   const router = useRouter()
   const getEmail = router.query.email
   
-  // const getUser = async () => {
-  //   setLoading(true)
-  //   await axios.get(`${process.env.NEXT_APP_URL}/users/${getEmail}`)
-  //   .then((res) => {
-  //     console.log(res.data.data)
-  //     setUser(res.data.data);
-  //     setLoading(false);
-  //   }).catch((err) => {
-  //     console.log(err)
-  //     setLoading(false);
-  //   })
-  // }
-
-  // useEffect(() => {
-  //   getUser()
-  // },[getEmail])
-
   const verif = async () => {
     setLoading(true)
     await axios.get(`${process.env.NEXT_APP_URL}/auth/verification/${email}/${otp}`)

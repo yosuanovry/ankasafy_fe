@@ -90,7 +90,6 @@ function MyProfile() {
   };
 
   const router = useRouter();
-  const url = "http://localhost:4000";
 
   const Logout = () => {
     removeCookie("token", { path: "/" });
@@ -103,7 +102,7 @@ function MyProfile() {
     formData.append("photo", photo);
     console.log(formData);
     await axios
-      .put(url + `/users/update-profile-photo`, formData, {
+      .put(process.env.NEXT_APP_URL + `/users/update-profile-photo`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${cookies.token}`,
@@ -130,7 +129,7 @@ function MyProfile() {
     setLoading(true);
     e.preventDefault();
     await axios
-      .put(url + `/users/update-profile-information`, data, {
+      .put(process.env.NEXT_APP_URL + `/users/update-profile-information`, data, {
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",

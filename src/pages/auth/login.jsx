@@ -1,7 +1,7 @@
 import Image from "next/image";
 import leftLayout from "../../../public/assets/left-layout.png";
 import logoLayout from "../../../public/assets/logo-layout.png";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useCookies } from "react-cookie";
 import { useRouter } from "next/router";
 import axios from "axios";

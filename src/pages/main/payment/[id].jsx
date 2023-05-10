@@ -27,11 +27,10 @@ function Payment() {
 
   const router = useRouter();
   const id = router.query.id;
-  const url = "http://localhost:4000";
 
   useEffect(() => {
     setLoading(true)
-    axios.get(`${url}/bookings/detail/${id}`, {
+    axios.get(`${process.env.NEXT_APP_URL}/bookings/detail/${id}`, {
       headers: {
         "Authorization": `Bearer ${cookies.token}`
       }
@@ -47,7 +46,7 @@ function Payment() {
     let data = {
       is_paid
     }
-    await axios.put(`${url}/bookings/is_paid/${id}`, data, {
+    await axios.put(`${process.env.NEXT_APP_URL}/bookings/is_paid/${id}`, data, {
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${cookies.token}`

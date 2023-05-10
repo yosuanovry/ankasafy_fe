@@ -5,7 +5,7 @@ import { Poppins } from "next/font/google";
 
 const poppins = Poppins({ weight: "400", subsets: ["latin"] });
 
-function Login() {
+function ForgotPassword() {
   return (
     <div className={`h-screen flex ${poppins.className}`}>
       <div className="h-auto w-3/6 lg:w-3/6">
@@ -36,4 +36,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default ForgotPassword;

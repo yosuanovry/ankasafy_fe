@@ -35,7 +35,6 @@ function MyBooking() {
   });
 
   const router = useRouter();
-  const url = "http://localhost:4000";
 
   useEffect(() => {
     if (cookies.token) {
@@ -62,7 +61,7 @@ function MyBooking() {
   
   useEffect(() => {
     setLoading(true)
-    axios.get(`${url}/bookings/mybookings`, {
+    axios.get(`${process.env.NEXT_APP_URL}/bookings/mybookings`, {
       headers: {
         "Authorization": `Bearer ${cookies.token}`
       }

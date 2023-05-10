@@ -30,13 +30,12 @@ export default function BookTicket() {
   const [cookies, setCookie, removeCookie] = useCookies(["user"]);
 
   const router = useRouter();
-  const url = "http://localhost:4000";
   const id = router.query.id;
 
 
   useEffect(() => {
     setLoading(true)
-    axios.get(`${url}/bookings/detail/${id}`, {
+    axios.get(`${process.env.NEXT_APP_URL}/bookings/detail/${id}`, {
       headers: {
         "Authorization": `Bearer ${cookies.token}`
       }
