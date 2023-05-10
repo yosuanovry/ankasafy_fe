@@ -3,7 +3,6 @@ import Footer from "@/component/footer";
 import Image from "next/image";
 import { Poppins } from "next/font/google";
 import { FormControl, TextField, Switch } from "@mui/material";
-import garudaind from "../../../../public/assets/garudaind.png";
 import FlightTakeoffIcon from "@mui/icons-material/FlightTakeoff";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
@@ -13,6 +12,7 @@ import axios from "axios";
 import { useRouter } from "next/router";
 import { useCookies } from "react-cookie";
 import jwtDecode from "jwt-decode";
+import CircularProgress from '@mui/material/CircularProgress';
 
 const poppins = Poppins({ weight: "400", subsets: ["latin"] });
 
@@ -20,11 +20,9 @@ function Booking() {
   const [cookies, setCookie, removeCookie] = useCookies(["user"]);
   const [value, setValue] = useState("");
   const [ticketData, setTicketData] = useState(null);
-  const [isLoading, setLoading] = useState(false);
+  const [isLoading, setLoading] = useState(true);
   const [fullname, setFullname] = useState("");
   const [nationality, setNationality] = useState("");
-  const [total_price, setTotal_Price] = useState();
-  const [is_paid, setIs_Paid] = useState(1)
   const [insurance, setInsurance] = useState(false);
   const [storage, setStorage] = useState();
   const [localStorage, setLocalStorage] = useState({
@@ -38,14 +36,13 @@ function Booking() {
     address: "Address",
   });
 
-  const url = "http://localhost:4000";
   const router = useRouter();
   const id = router.query.id;
 
   // get tickets data by id
   useEffect(() => {
     setLoading(true);
-    axios.get(`${url}/tickets/${id}`).then((res) => {
+    axios.get(`${process.env.NEXT_APP_URL}/tickets/${id}`).then((res) => {
       console.log(res.data.data);
       setTicketData(res.data.data);
       setLoading(false);
@@ -151,6 +148,7 @@ function Booking() {
 
 
   const insertBooking = async () => {
+    setLoading(true)
     let data = {
       tickets_id: id,
       users_id: localStorage.id,
@@ -161,18 +159,18 @@ function Booking() {
       is_paid: 1,
     };
   
-    console.log(data)
-    console.log(dataFormat[0].price)
-    await axios.post(`${url}/bookings`, data, {
+    await axios.post(`${process.env.NEXT_APP_URL}/bookings`, data, {
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${cookies.token}`
       }
     }).then((res) => {
       console.log(res)
+      setLoading(false)
       router.push(`/main/payment/${res.data.data.id}`)
     }).catch((err) => {
       console.log(err)
+      setLoading(false)
     })
   };
 
@@ -262,10 +260,10 @@ function Booking() {
                   <div className="p-4 text-sm font-semibold">Get travel compensation up to $ 10.000,00</div>
                 </div>
               </div>
-              <div className="flex items-center justify-center my-4">
+              <div className="flex flex-row items-center justify-center my-4 gap-4">
                 
                   <button onClick={insertBooking} className="text-xs sm:text-sm font-semibold bg-blue-500 p-1 rounded-lg text-white ms-1 sm:py-4 sm:px-10 shadow-md shadow-blue-500/50">Proceed to Payment</button>
-          
+                  {isLoading && <div><CircularProgress /></div>}
               </div>
             </div>
             <div className="flex flex-col w-2/6">
@@ -278,7 +276,7 @@ function Booking() {
                   <div className="flex flex-col gap-2">
                     <div className="flex flex-row justify-between p-4">
                       <div className="flex flex-row items-center gap-4 mt-4">
-                        <Image src={garudaind} alt="garuda logo" style={{ width: "30%" }} />
+                        <Image src={item.airline_photo} width={200} height={100} alt="garuda logo" style={{ width: "30%" }} />
                         <div className="text-xs sm:text-md">{item.airline}</div>
                       </div>
                     </div>

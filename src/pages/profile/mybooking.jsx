@@ -73,18 +73,19 @@ function MyBooking() {
     });
   },[cookies.token])
 
+  
   const dataFormat = datas?.map((item) => {
     const timestamp1 = new Date(item.departure_time);
     const timestamp2 = new Date(item.arrival_time);
 
-    const validateIsPaid = (data) => {
+    const validateIsPaid = (data, id) => {
       if(data === 1) {
         return (
-          <button className="p-4 text-white text-sm font-bold rounded-lg shadow-lg" style={{backgroundColor:'#FF7F23'}}>Waiting for payment</button>
+          <button onClick={()=>router.push(`/main/payment/${id}`)} className="p-4 text-white text-sm font-bold rounded-lg shadow-lg" style={{backgroundColor:'#FF7F23'}}>Waiting for payment</button>
         )
       } else if(data === 2) {
         return (
-          <button className="p-4 ms-5 text-white text-sm font-bold rounded-lg shadow-lg" style={{backgroundColor:'#4FCF4D'}}>E-ticket Issued</button>
+          <button  onClick={()=>router.push(`/main/bookticket/${id}`)} className="p-4 ms-5 text-white text-sm font-bold rounded-lg shadow-lg" style={{backgroundColor:'#4FCF4D'}}>E-ticket Issued</button>
         )
       }
       return null
@@ -127,7 +128,7 @@ function MyBooking() {
       departure_time: timeFormat1,
       arrival_time: timeFormat2,
       difference: diffStr,
-      is_paid: validateIsPaid(item.is_paid)
+      is_paid: validateIsPaid(item.is_paid, item.id)
     };
   });
 
@@ -145,7 +146,7 @@ function MyBooking() {
 
         <div className={`container mx-auto px-4 mt-3 ${poppins.className}`}>
           <div className="flex flex-row gap-4 mt-14">
-            <div className="flex flex-col w-2/6 justify-center mx-10 rounded-xl" style={{ backgroundColor: "white" }}>
+            <div className="flex flex-col w-2/6 justify-start mx-10 rounded-xl" style={{ backgroundColor: "white" }}>
               <div className="flex justify-center mt-8">
                 <Image src={localStorage.photo} alt="dummy" width={128} height={128} style={{ borderWidth: 3, borderRadius: "4rem", borderColor: "#2395FF", width: "8rem" }} />
               </div>
@@ -221,7 +222,7 @@ function MyBooking() {
                 <div className="flex flex-row px-6 py-6 justify-between items-center">
                   <div className="flex flex-row items-center gap-20">
                     <div className="text-gray-500 font-bold">Status</div>
-                    <div onClick={()=>router.push(`/main/bookticket/${item.id}`)}>{item.is_paid}</div>
+                    <div>{item.is_paid}</div>
                   </div>
                   <div className="flex flex-row items-center gap-2">
                     <div className="text-blue-400 text-sm font-bold">View Details</div>

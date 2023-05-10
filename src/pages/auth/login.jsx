@@ -6,6 +6,7 @@ import { useCookies } from "react-cookie";
 import { useRouter } from "next/router";
 import axios from "axios";
 import { Poppins } from "next/font/google";
+import CircularProgress from '@mui/material/CircularProgress';
 
 const poppins = Poppins({ weight: "400", subsets: ["latin"] });
 
@@ -13,9 +14,10 @@ function Login() {
   const [cookies, setCookie, removeCookie] = useCookies(["user"]);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("")
 
   const router = useRouter();
-  const url = `http://localhost:4000`;
 
   let data = {
     email,
@@ -24,7 +26,8 @@ function Login() {
 
   const userLogin = (e) => {
     e.preventDefault();
-    axios.post(url + `/auth/login`, data, {
+    setLoading(true)
+    axios.post(process.env.NEXT_APP_URL + `/auth/login`, data, {
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json"
@@ -37,12 +40,13 @@ function Login() {
         setCookie("token", res.data.data.token, {
           path: "/",
         });
-        
+        setLoading(true)
         router.replace("/profile/myprofile");
       })
       .catch((err) => {
-        console.log(err);
-        console.log(data);
+        console.log(err)
+        setLoading(false)
+        setError(err.response.data.message)
       });
   };
 
@@ -87,6 +91,12 @@ function Login() {
                 Sign In
               </button>
             </span>
+
+            {loading && <div className="flex justify-center items-center mt-4">
+              <CircularProgress />
+              </div>
+              }
+             {error && <div className="flex justify-center items-center mt-4 text-red-500">{error}, masukkan data yang benar</div>}
 
             <span className="flex items-center justify-center mt-8 lg:mt-6 text-xxs lg:text-md">Did you forgot your password?</span>
 

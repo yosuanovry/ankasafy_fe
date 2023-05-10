@@ -9,4 +9,7 @@ module.exports = {
       },
     ],
   },
+  env: {
+    NEXT_APP_URL: process.env.NEXT_APP_URL,
+  },
 }

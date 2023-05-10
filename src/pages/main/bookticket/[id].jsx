@@ -50,7 +50,7 @@ export default function BookTicket() {
 
   useEffect(() => {
     generateBarcode('barcodeCanvas', datas.id)
-  },[])
+  },[datas.id])
 
 
   return (
@@ -68,7 +68,7 @@ export default function BookTicket() {
               <div className="flex flex-col sm:w-4/6">
                 <div className="flex flex-col justify-between p-4">
                   <div className="flex flex-row items-center">
-                    <Image src={garudaind} width={100} height={100} alt="garuda logo" style={{ width: "35%" }} />
+                    <Image src={datas.photo} width={100} height={100} alt="garuda logo" style={{ width: "35%" }} />
                     <div className="flex flex-row items-center justify-start text-sm sm:text-2xl font-bold ps-10 gap-4">
                       <div className="flex">{datas.departure_nationality}</div>
                       <FlightTakeoffIcon style={{ width: "2rem" }} color="disabled" />

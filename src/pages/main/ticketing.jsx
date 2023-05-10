@@ -5,27 +5,28 @@ import Footer from "@/component/footer";
 import logoLayoutWhite from "../../../public/assets/logo-layout-white.png";
 import RepeatIcon from "@mui/icons-material/Repeat";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import garudaind from "../../../public/assets/garudaind.png";
 import FlightTakeoffIcon from "@mui/icons-material/FlightTakeoff";
 import LuggageIcon from "@mui/icons-material/Luggage";
 import LunchDiningIcon from "@mui/icons-material/LunchDining";
 import WifiIcon from "@mui/icons-material/Wifi";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/router";
+import Accordion from "@mui/material/Accordion";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
+
 
 const poppins = Poppins({ weight: "400", subsets: ["latin"] });
 
 function Ticketing() {
   const [datas, setDatas] = useState();
 
-  const url = "http://localhost:4000";
   const router = useRouter()
 
   const getTickets = async () => {
     axios
-      .get(url + `/tickets`)
+      .get(process.env.NEXT_APP_URL + `/tickets`)
       .then((res) => {
         console.log(res.data.data);
         setDatas(res.data.data);
@@ -184,116 +185,190 @@ function Ticketing() {
 
         <div className={`container mx-auto px-4 mt-6 ${poppins.className}`}>
           <div className="flex flex-row gap-4">
-            <div className="flex flex-col w-3/12 justify-center">
+            <div className="flex flex-col w-3/12 justify-start">
               <div className="flex flex-row justify-between items-end">
                 <div className="text-lg font-bold sm:text-xl">Filter</div>
                 <div className="text-sm text-blue-500 font-bold sm:text-md">Reset</div>
               </div>
 
-              <div className="container h-5/6 bg-white mt-5 rounded-t-xl" style={{ borderBottomWidth: 1 }}>
-                <div className="flex flex-row justify-between items-center mx-2 mt-2">
-                  <div className="text-md font-bold">Transit</div>
-                  <KeyboardArrowUpIcon color="primary" />
-                </div>
-                <div className="flex flex-row justify-between items-center mx-2 mt-3">
-                  <div className="text-xs font-semibold sm:text-sm">Direct</div>
-                  <input type="checkbox" className="rounded border-blue-500 text-indigo-600 shadow-sm focus:border-blue-500 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50 mx-1" />
-                </div>
-                <div className="flex flex-row justify-between items-center mx-2 mt-2">
-                  <div className="text-xs font-semibold sm:text-sm">Transit</div>
-                  <input type="checkbox" className="rounded border-blue-500 text-indigo-600 shadow-sm focus:border-blue-500 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50 mx-1" />
-                </div>
-                <div className="flex flex-row justify-between items-center mx-2 my-2">
-                  <div className="text-xs font-semibold sm:text-sm">Transit 2+</div>
-                  <input type="checkbox" className="rounded border-blue-500 text-indigo-600 shadow-sm focus:border-blue-500 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50 mx-1" />
-                </div>
-              </div>
+              <Accordion disableGutters className="rounded-t-xl mt-5 border-b-2">
+                <AccordionSummary
+                  expandIcon={<KeyboardArrowUpIcon color="primary" className="text-ankasa-blue" />}
+                  aria-controls="panel1a-content"
+                  id="panel1a-header"
+                >
+                  <div className="font-bold">Transit</div>
+                </AccordionSummary>
+                <AccordionDetails className="text-sm font-bold">
+                  {/* op 1 */}
+                  <div className="flex flex-row justify-between">
+                    <label htmlFor="chk-direct" className="p-1 text-black">
+                      Direct
+                    </label>
+                    <input id="chk-direct" type="checkbox"></input>
+                  </div>
+                  {/* op 2 */}
+                  <div className="flex flex-row justify-between">
+                    <label htmlFor="chk-transit1" className="p-1 text-black">
+                      Transit 1
+                    </label>
+                    <input id="chk-transit1" type="checkbox"></input>
+                  </div>
+                  {/* op 3 */}
+                  <div className="flex flex-row justify-between">
+                    <label htmlFor="chk-transit2" className="p-1 text-black">
+                      Transit 2+
+                    </label>
+                    <input id="chk-transit2" type="checkbox"></input>
+                  </div>
+                </AccordionDetails>
+              </Accordion>
 
-              <div className="container h-5/6 bg-white" style={{ borderBottomWidth: 1 }}>
-                <div className="flex flex-row justify-between items-center mx-2 mt-2">
-                  <div className="text-md font-bold">Facilities</div>
-                  <KeyboardArrowUpIcon color="primary" />
-                </div>
-                <div className="flex flex-row justify-between items-center mx-2 mt-3">
-                  <div className="text-xs font-semibold sm:text-sm">Luggage</div>
-                  <input type="checkbox" className="rounded border-blue-500 text-indigo-600 shadow-sm focus:border-blue-500 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50 mx-1" />
-                </div>
-                <div className="flex flex-row justify-between items-center mx-2 mt-2">
-                  <div className="text-xs font-semibold sm:text-sm">In-Flight Meal</div>
-                  <input type="checkbox" className="rounded border-blue-500 text-indigo-600 shadow-sm focus:border-blue-500 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50 mx-1" />
-                </div>
-                <div className="flex flex-row justify-between items-center mx-2 my-2">
-                  <div className="text-xs font-semibold sm:text-sm">Wi-fi</div>
-                  <input type="checkbox" className="rounded border-blue-500 text-indigo-600 shadow-sm focus:border-blue-500 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50 mx-1" />
-                </div>
-              </div>
+              <Accordion disableGutters className="border-b-2">
+                <AccordionSummary
+                  expandIcon={<KeyboardArrowUpIcon color="primary" className="text-ankasa-blue" />}
+                  aria-controls="panel1a-content"
+                  id="panel1a-header"
+                >
+                  <div className="font-bold">Facilities</div>
+                </AccordionSummary>
+                <AccordionDetails className="text-sm font-bold">
+                  {/* op 1 */}
+                  <div className="flex flex-row justify-between">
+                    <label htmlFor="chk-direct" className="p-1 text-black">
+                      Luggage
+                    </label>
+                    <input id="chk-direct" type="checkbox"></input>
+                  </div>
+                  {/* op 2 */}
+                  <div className="flex flex-row justify-between">
+                    <label htmlFor="chk-transit1" className="p-1 text-black">
+                    In-Flight Meal
+                    </label>
+                    <input id="chk-transit1" type="checkbox"></input>
+                  </div>
+                  {/* op 3 */}
+                  <div className="flex flex-row justify-between">
+                    <label htmlFor="chk-transit2" className="p-1 text-black">
+                    Wi-fi
+                    </label>
+                    <input id="chk-transit2" type="checkbox"></input>
+                  </div>
+                </AccordionDetails>
+              </Accordion>
 
-              <div className="container h-5/6 bg-white" style={{ borderBottomWidth: 1 }}>
-                <div className="flex flex-row justify-between items-center mx-2 mt-2">
-                  <div className="text-sm font-bold">Departure Time</div>
-                  <KeyboardArrowUpIcon color="primary" />
-                </div>
-                <div className="flex flex-row justify-between items-center mx-2 mt-3">
-                  <div className="text-xs font-semibold sm:text-sm">00:00 - 06:00</div>
-                  <input type="checkbox" className="rounded border-blue-500 text-indigo-600 shadow-sm focus:border-blue-500 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50 mx-1" />
-                </div>
-                <div className="flex flex-row justify-between items-center mx-2 mt-2">
-                  <div className="text-xs font-semibold sm:text-sm">06:00 - 12:00</div>
-                  <input type="checkbox" className="rounded border-blue-500 text-indigo-600 shadow-sm focus:border-blue-500 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50 mx-1" />
-                </div>
-                <div className="flex flex-row justify-between items-center mx-2 my-2">
-                  <div className="text-xs font-semibold sm:text-sm">12:00 - 18:00</div>
-                  <input type="checkbox" className="rounded border-blue-500 text-indigo-600 shadow-sm focus:border-blue-500 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50 mx-1" />
-                </div>
-                <div className="flex flex-row justify-between items-center mx-2 my-2">
-                  <div className="text-xs font-semibold sm:text-sm">18:00 - 24:00</div>
-                  <input type="checkbox" className="rounded border-blue-500 text-indigo-600 shadow-sm focus:border-blue-500 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50 mx-1" />
-                </div>
-              </div>
+              <Accordion disableGutters className="border-b-2">
+                <AccordionSummary
+                  expandIcon={<KeyboardArrowUpIcon color="primary" className="text-ankasa-blue" />}
+                  aria-controls="panel1a-content"
+                  id="panel1a-header"
+                >
+                  <div className="font-bold">Departure Time</div>
+                </AccordionSummary>
+                <AccordionDetails className="text-sm font-bold">
+                  {/* op 1 */}
+                  <div className="flex flex-row justify-between">
+                    <label htmlFor="chk-direct" className="p-1 text-black">
+                    00:00 - 06:00
+                    </label>
+                    <input id="chk-direct" type="checkbox"></input>
+                  </div>
+                  {/* op 2 */}
+                  <div className="flex flex-row justify-between">
+                    <label htmlFor="chk-transit1" className="p-1 text-black">
+                    06:00 - 12:00
+                    </label>
+                    <input id="chk-transit1" type="checkbox"></input>
+                  </div>
+                  {/* op 3 */}
+                  <div className="flex flex-row justify-between">
+                    <label htmlFor="chk-transit2" className="p-1 text-black">
+                    12:00 - 18:00
+                    </label>
+                    <input id="chk-transit2" type="checkbox"></input>
+                  </div>
+                  <div className="flex flex-row justify-between">
+                    <label htmlFor="chk-transit2" className="p-1 text-black">
+                    18:00 - 24:00
+                    </label>
+                    <input id="chk-transit2" type="checkbox"></input>
+                  </div>
+                </AccordionDetails>
+              </Accordion>
 
-              <div className="container h-5/6 bg-white" style={{ borderBottomWidth: 1 }}>
-                <div className="flex flex-row justify-between items-center mx-2 mt-2">
-                  <div className="text-sm font-bold">Time Arrived</div>
-                  <KeyboardArrowUpIcon color="primary" />
-                </div>
-                <div className="flex flex-row justify-between items-center mx-2 mt-3">
-                  <div className="text-xs font-semibold sm:text-sm">00:00 - 06:00</div>
-                  <input type="checkbox" className="rounded border-blue-500 text-indigo-600 shadow-sm focus:border-blue-500 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50 mx-1" />
-                </div>
-                <div className="flex flex-row justify-between items-center mx-2 mt-2">
-                  <div className="text-xs font-semibold sm:text-sm">06:00 - 12:00</div>
-                  <input type="checkbox" className="rounded border-blue-500 text-indigo-600 shadow-sm focus:border-blue-500 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50 mx-1" />
-                </div>
-                <div className="flex flex-row justify-between items-center mx-2 my-2">
-                  <div className="text-xs font-semibold sm:text-sm">12:00 - 18:00</div>
-                  <input type="checkbox" className="rounded border-blue-500 text-indigo-600 shadow-sm focus:border-blue-500 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50 mx-1" />
-                </div>
-                <div className="flex flex-row justify-between items-center mx-2 my-2">
-                  <div className="text-xs font-semibold sm:text-sm">18:00 - 24:00</div>
-                  <input type="checkbox" className="rounded border-blue-500 text-indigo-600 shadow-sm focus:border-blue-500 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50 mx-1" />
-                </div>
-              </div>
+              <Accordion disableGutters className="border-b-2">
+                <AccordionSummary
+                  expandIcon={<KeyboardArrowUpIcon color="primary" className="text-ankasa-blue" />}
+                  aria-controls="panel1a-content"
+                  id="panel1a-header"
+                >
+                  <div className="font-bold">Time Arrived</div>
+                </AccordionSummary>
+                <AccordionDetails className="text-sm font-bold">
+                  {/* op 1 */}
+                  <div className="flex flex-row justify-between">
+                    <label htmlFor="chk-direct" className="p-1 text-black">
+                    00:00 - 06:00
+                    </label>
+                    <input id="chk-direct" type="checkbox"></input>
+                  </div>
+                  {/* op 2 */}
+                  <div className="flex flex-row justify-between">
+                    <label htmlFor="chk-transit1" className="p-1 text-black">
+                    06:00 - 12:00
+                    </label>
+                    <input id="chk-transit1" type="checkbox"></input>
+                  </div>
+                  {/* op 3 */}
+                  <div className="flex flex-row justify-between">
+                    <label htmlFor="chk-transit2" className="p-1 text-black">
+                    12:00 - 18:00
+                    </label>
+                    <input id="chk-transit2" type="checkbox"></input>
+                  </div>
+                  <div className="flex flex-row justify-between">
+                    <label htmlFor="chk-transit2" className="p-1 text-black">
+                    18:00 - 24:00
+                    </label>
+                    <input id="chk-transit2" type="checkbox"></input>
+                  </div>
+                </AccordionDetails>
+              </Accordion>
 
-              <div className="container h-5/6 bg-white rounded-b-xl" style={{ borderBottomWidth: 1 }}>
-                <div className="flex flex-row justify-between items-center mx-2 mt-2">
-                  <div className="text-md font-bold">Airlines</div>
-                  <KeyboardArrowUpIcon color="primary" />
-                </div>
-                <div className="flex flex-row justify-between items-center mx-2 mt-3">
-                  <div className="text-xs font-semibold sm:text-sm">Garuda Indonesia</div>
-                  <input type="checkbox" className="rounded border-blue-500 text-indigo-600 shadow-sm focus:border-blue-500 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50 mx-1" />
-                </div>
-                <div className="flex flex-row justify-between items-center mx-2 mt-2">
-                  <div className="text-xs font-semibold sm:text-sm">Air Asia</div>
-                  <input type="checkbox" className="rounded border-blue-500 text-indigo-600 shadow-sm focus:border-blue-500 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50 mx-1" />
-                </div>
-                <div className="flex flex-row justify-between items-center mx-2 my-2">
-                  <div className="text-xs font-semibold sm:text-sm">Lion Air</div>
-                  <input type="checkbox" className="rounded border-blue-500 text-indigo-600 shadow-sm focus:border-blue-500 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50 mx-1" />
-                </div>
-              </div>
+              <Accordion disableGutters className="border-b-2">
+                <AccordionSummary
+                  expandIcon={<KeyboardArrowUpIcon color="primary" className="text-ankasa-blue" />}
+                  aria-controls="panel1a-content"
+                  id="panel1a-header"
+                >
+                  <div className="font-bold">Airlines</div>
+                </AccordionSummary>
+                <AccordionDetails className="text-sm font-bold">
+                  {/* op 1 */}
+                  <div className="flex flex-row justify-between">
+                    <label htmlFor="chk-direct" className="p-1 text-black">
+                    Garuda Indonesia
+                    </label>
+                    <input id="chk-direct" type="checkbox"></input>
+                  </div>
+                  {/* op 2 */}
+                  <div className="flex flex-row justify-between">
+                    <label htmlFor="chk-transit1" className="p-1 text-black">
+                    Air Asia
+                    </label>
+                    <input id="chk-transit1" type="checkbox"></input>
+                  </div>
+                  {/* op 3 */}
+                  <div className="flex flex-row justify-between">
+                    <label htmlFor="chk-transit2" className="p-1 text-black">
+                    Lion Air
+                    </label>
+                    <input id="chk-transit2" type="checkbox"></input>
+                  </div>
+                </AccordionDetails>
+              </Accordion>
             </div>
-
+          
               <div className="flex flex-col w-9/12 ">
                 <div className="flex flex-row justify-between items-center sm:items-end">
                   <div className="flex flex-col sm:flex-row sm:items-end sm:gap-1 font-bold">
@@ -302,11 +377,11 @@ function Ticketing() {
                   </div>
                   <div className="flex flex-row items-center gap-2">
                     <div className="font-bold text-sm">Sort by</div>
-                    <RepeatIcon style={{ width: 15, rotate: "90deg" }} />
+                    <RepeatIcon style={{ width: 15, rotate: "90deg" }} /> 
                   </div>
                 </div>
             {dataFormat?.map((item, index) => (
-                <div  key={index} className="container mx-auto px-4 bg-white mt-5 rounded-xl">
+                <div key={index} className="container mx-auto px-4 bg-white mt-5 rounded-xl">
                   <div className="flex flex-col gap-2">
                     <div className="flex flex-row items-center gap-4 mt-4">
                       <Image src={item.airline_photo} width={100} height={100} alt="garuda logo" style={{ width: "10%" }} />

@@ -11,6 +11,7 @@ import { useRouter } from "next/router";
 import { useCookies } from "react-cookie";
 import {useState, useEffect} from 'react';
 import axios from "axios";
+import CircularProgress from '@mui/material/CircularProgress';
 
 import { usePaymentInputs, PaymentInputsWrapper } from "react-payment-inputs";
 import images from "react-payment-inputs/images";
@@ -20,7 +21,7 @@ const poppins = Poppins({ weight: "400", subsets: ["latin"] });
 function Payment() {
   const { wrapperProps, getCardImageProps, getCardNumberProps, getExpiryDateProps, getCVCProps } = usePaymentInputs();
   const [cookies, setCookie, removeCookie] = useCookies(["user"]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [is_paid, setIs_Paid] = useState(2)
   const [datas, setDatas] = useState()
 
@@ -42,6 +43,7 @@ function Payment() {
   },[id, cookies.token])
 
   const updateIsPaid = async () => {
+    setLoading(true)
     let data = {
       is_paid
     }
@@ -52,9 +54,11 @@ function Payment() {
       }
     }).then((res) => {
       console.log(res)
+      setLoading(true)
       router.push("/profile/mybooking")
     }).catch((err) => {
       console.log(err)
+      setLoading(false)
     })
   } 
   
@@ -143,7 +147,10 @@ function Payment() {
               </div>
 
               <div className="flex flex-col items-center justify-center my-2">
+                <div className="flex flex-row gap-4">
               <button onClick={updateIsPaid} className="text-xs sm:text-sm font-light bg-blue-500 p-1 rounded-lg text-white ms-1 sm:py-2 sm:px-10 shadow-md shadow-blue-500/50 w-full flex items-center justify-center">Check out</button>
+                {loading && <div className="mt-1"><CircularProgress size={30} /></div>}
+                </div>
               <div className="text-xs underline text-sky-500 my-2">Have a promo code?</div>
             </div>
 

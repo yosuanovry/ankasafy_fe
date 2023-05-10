@@ -61,10 +61,10 @@ function Navbar() {
 
         <div className="flex flex-row items-center gap-8">
           <Link href="/auth/login">
-            <button className="bg-blue-500 border-2 border-blue-500 text-white p-2 shadow-md shadow-blue-500/50">Sign in</button>
+            <button style={{paddingLeft: 30, paddingRight: 30, paddingTop:10, paddingBottom: 10}} className="bg-blue-500 border-2 border-blue-500 text-white shadow-md shadow-blue-500/50 rounded-lg">Sign in</button>
           </Link>
           <Link href="/auth/register">
-            <button className="border-2 border-blue-500 p-2 shadow-lg shadow-blue-300/50">Sign up</button>
+            <button style={{paddingLeft: 30, paddingRight: 30, paddingTop:10, paddingBottom: 10}} className="border-2 border-blue-500 shadow-lg shadow-blue-300/50 rounded-lg">Sign up</button>
           </Link>
         </div>
       </div>

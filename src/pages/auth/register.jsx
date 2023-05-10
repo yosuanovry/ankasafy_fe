@@ -2,10 +2,10 @@ import Image from "next/image";
 import leftLayout from "../../../public/assets/left-layout.png";
 import logoLayout from "../../../public/assets/logo-layout.png";
 import { useEffect, useState } from "react";
-import { useCookies } from "react-cookie";
 import { useRouter } from "next/router";
 import axios from "axios";
 import { Poppins } from "next/font/google";
+import CircularProgress from '@mui/material/CircularProgress';
 
 const poppins = Poppins({ weight: "400", subsets: ["latin"] });
 
@@ -13,12 +13,13 @@ function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullname, setFullname] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("")
 
   const router = useRouter();
 
-  const url = `https://drab-gray-bull-ring.cyclic.app`;
-
   const userRegister = (e) => {
+    setLoading(true)
     e.preventDefault();
     let data = {
       email,
@@ -26,13 +27,13 @@ function Register() {
       password,
     };
     axios
-      .post(url + `/auth/register/customer`, data)
+      .post(process.env.NEXT_APP_URL + `/auth/register/customer`, data)
       .then((res) => {
-        console.log(res);
+        setLoading(true)
+        router.push(`/auth/verification/${email}`)
       })
       .catch((err) => {
-        console.log(err);
-        console.log(data);
+        setError(err.response.data.message)
       });
   };
 
@@ -93,6 +94,11 @@ function Register() {
               <input required type="checkbox" className="rounded border-blue-500 text-indigo-600 shadow-sm focus:border-blue-500 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50" />
               <span className="ml-2 text-xxs sm:text-md">Accept terms and condition</span>
             </label>
+            {loading && <div className="flex justify-center items-center mt-4">
+              <CircularProgress />
+              </div>
+              }
+             {error && <div className="flex justify-center items-center mt-4 text-red-500">{error}, masukkan data yang benar</div>}
             <span className="flex items-center justify-center mt-8 lg:mt-16 text-xxs lg:text-md">Already have an account?</span>
             <span className="flex justify-center items-center mt-4 rounded-lg text-sm py-1 md:py-4 font-semibold border-blue-500 border-[1px] sm:text-base md:text-lg" style={{ backgroundColor: "white", color: "#2395FF" }}>
               <button type="submit" style={{ width: 455 }}>
