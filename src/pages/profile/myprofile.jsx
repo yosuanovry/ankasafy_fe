@@ -85,8 +85,10 @@ function MyProfile() {
   }, [storage]);
 
   const handlePhoto = (e) => {
-    setPhoto(e.target.files[0]);
+    let foto = e.target.files[0]
     setCurrentPhoto(URL.createObjectURL(e.target.files[0]));
+    setPhoto(foto);
+    console.log(photo)
     console.log(e.target.files[0])
   };
 
@@ -173,7 +175,7 @@ function MyProfile() {
                     </label>
                     <input id="file-input" type="file" style={{ position: "absolute", opacity: 0, width: 0, height: 0, pointerEvents: "none" }} onChange={handlePhoto} />
                   </div>
-                  {currentPhoto ? (
+                  {currentPhoto && photo !== undefined ? (
                     <button onClick={() => updatePhoto()} type="submit" className="flex mt-6 ms-2 rounded-lg text-sm py-1 md:py-3 px-2 font-semibold border-blue-400 border-[2px] sm:text-base bg-blue-400 text-white">
                       Change photo
                     </button>

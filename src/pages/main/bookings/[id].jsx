@@ -2,7 +2,7 @@ import Navbar from "@/component/navbar";
 import Footer from "@/component/footer";
 import Image from "next/image";
 import { Poppins } from "next/font/google";
-import { FormControl, TextField, Switch } from "@mui/material";
+import { FormControl, TextField, Switch, Alert } from "@mui/material";
 import FlightTakeoffIcon from "@mui/icons-material/FlightTakeoff";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
@@ -206,8 +206,8 @@ function Booking() {
                       <MuiTelInput id="phone-number-input" value={value || localStorage.phone} onChange={handlePhoneChange} variant="standard" color="primary" focused />
                     </FormControl>
                   </div>
-                  <div className="mt-5 mb-5">
-                    <div className="flex justify-center bg-green-300">ALERT</div>
+                  <div className="mt-4 mb-5">
+                  <Alert severity="error" className='tracking-wide p-2 rounded-xl'>Warning! Please Make sure that all data is correct!</Alert>
                   </div>
                 </div>
               </div>
@@ -234,8 +234,7 @@ function Booking() {
                       <TextField id="standard-password-input" type="text" autoComplete="current-password" variant="standard" placeholder="Nationality" value={nationality} onChange={(e) => setNationality(e.target.value)}/>
                     </FormControl>
                   </div>
-                  <div className="mt-5 mb-5">
-                    <div className="flex justify-center bg-green-300">ALERT</div>
+                  <div className="mb-5">
                   </div>
                 </div>
               </div>
