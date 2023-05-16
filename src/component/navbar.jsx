@@ -6,12 +6,12 @@ import Input from "@mui/material/Input";
 import InputAdornment from "@mui/material/InputAdornment";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
-import dummy from "../../public/assets/dummy.png";
 import { useCookies } from "react-cookie";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import jwtDecode from "jwt-decode";
-import axios from "axios";
+import style from './navbar.module.css'
+
 
 const poppins = Poppins({ weight: "400", subsets: ["latin"] });
 
@@ -46,25 +46,24 @@ function Navbar() {
           <Image src={logoLayout} alt="Logo" width={30} />
           <p className="font-bold text-md lg:text-2xl">Ankasa</p>
         </div>
-        <div className="flex flex-row w-10 sm:w-1/6 items-center">
+        <div className="flex flex-row w-10 sm:w-1/6 justify-center items-center">
           <Input
-            className="text-xs sm:text-md"
+            className={`text-xs sm:text-md ${style.searchInput}`}
             startAdornment={
               <InputAdornment position="start">
-                <SearchIcon style={{ width: "100%" }} />
+                <SearchIcon  className={`${style.inputSearchIcon}`}/>
               </InputAdornment>
             }
-            style={{ width: "100%" }}
             placeholder="Destination"
           />
         </div>
 
         <div className="flex flex-row items-center gap-8">
           <Link href="/auth/login">
-            <button style={{paddingLeft: 30, paddingRight: 30, paddingTop:10, paddingBottom: 10}} className="bg-blue-500 border-2 border-blue-500 text-white shadow-md shadow-blue-500/50 rounded-lg">Sign in</button>
+            <button className={`bg-blue-500 border-2 border-blue-500 text-white shadow-md shadow-blue-500/50 rounded-lg ${style.navButton}`}>Sign in</button>
           </Link>
           <Link href="/auth/register">
-            <button style={{paddingLeft: 30, paddingRight: 30, paddingTop:10, paddingBottom: 10}} className="border-2 border-blue-500 shadow-lg shadow-blue-300/50 rounded-lg">Sign up</button>
+            <button className={`border-2 border-blue-500 shadow-lg shadow-blue-300/50 rounded-lg ${style.navButton}`}>Sign up</button>
           </Link>
         </div>
       </div>

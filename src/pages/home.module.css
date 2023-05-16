@@ -1,0 +1,30 @@
+.imageRow2 {
+    margin-top:-120px
+}
+
+.image1 {
+
+}
+
+.image2 {
+    width: 140rem;
+}
+
+@media screen and (max-width:576px) {
+.image1 {
+    width: 10rem;
+}
+
+.image2 {
+    width: 15rem;
+}
+
+.image3 {
+    width:5rem;
+}
+
+.imageRow2 {
+    margin-top: 0;
+}
+
+}

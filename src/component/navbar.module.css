@@ -1,0 +1,19 @@
+.searchInput {
+    width: 100%;  
+}
+
+.navButton {
+    padding-left: 30px; padding-right: 30px; padding-top:10px; padding-bottom: 10px
+}
+
+@media screen and (max-width:576px) {
+.searchInput {
+width: 0px;  
+}
+.inputSearchIcon {
+    width: 0px;
+}
+.navButton {
+    padding-left: 10px; padding-right: 10px; padding-top:6px; padding-bottom: 6px
+}
+}

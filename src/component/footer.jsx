@@ -19,8 +19,8 @@ function Footer() {
           <div className="flex flex-row justify-between sm:justify-between items-start gap-4 sm:gap-10" style={{marginTop:100}}>
             <div className="flex flex-col w-2/6 sm:w-2/6 gap-4">
               <div className="flex flex-row items-center gap-1 sm:gap-2">
-                <Image className="sm:hidden" src={logoLayout} alt="Logo" style={{width:'2.5rem'}}/>
-                <p className="font-bold text-md lg:text-2xl">Ankasa</p>
+                <Image className="sm:hidden" src={logoLayout} alt="Logo" style={{width:'1.5rem'}}/> 
+                <p className="font-bold text-sm lg:text-2xl">Ankasa</p>
               </div>
               <div className="text-xs sm:text-sm">Find your Flight and explore the world with us. We will take care of the rest</div>
             </div>
