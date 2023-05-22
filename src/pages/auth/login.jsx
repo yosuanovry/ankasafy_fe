@@ -62,8 +62,15 @@ function Login() {
         </div>
         <div className="flex flex-col justify-center items-center my-6">
           <h1 className="font-bold text-lg sm:text-4xl">Login</h1>
+          <div className="w-full mt-2">
+          <h5 className="mt-5">ID for deployment test:</h5>
+          <div className="flex gap-10">
+          <h5 className="mt-2"><span className="font-bold">Email</span>: hhg94931@zslsz.com</h5>
+          <h5 className="mt-2"><span className="font-bold">Password</span>: 123</h5>
+          </div>
+          </div>
           <form className="w-full" onSubmit={userLogin}>
-            <div className="flex justify-center w-full lg:mt-10">
+            <div className="flex justify-center w-full lg:mt-2">
               <input
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
