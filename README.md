@@ -14,7 +14,7 @@
     <a href="https://github.com/yosuanovry/ankasafy_fe/issues">Request Feature</a>
   </p>
 </div>
-Ankasafy_FE is a website that provides flight tickets and bookings where users can booked and get the booking ticket file. 
+Ankasafy is a website that provides flight tickets and bookings where users can booked and get the booking ticket file. 
 <br />
 This website was made with Next JS, React Context, Tailwind, Material UI, Axios, Cookies, Node JS, Express JS, and PostgreSQL.
 
